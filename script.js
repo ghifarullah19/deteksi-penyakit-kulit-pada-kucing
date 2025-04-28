@@ -7,6 +7,30 @@ async function loadImageBase64(file) {
     });
 }
 
+function loadImagePreview() {
+    const fileInput = document.getElementById('fileInput');
+    const file = fileInput.files[0];
+
+    if (!file) {
+        alert("Silakan pilih gambar terlebih dahulu!");
+        return;
+    }
+
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    const imageURL = URL.createObjectURL(file);
+    const img = new Image();
+    img.src = imageURL;
+
+    img.onload = function () {
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear previous canvas content
+        ctx.drawImage(img, 0, 0, img.width, img.height); // Draw the uploaded image as preview
+    };
+}
+
 async function predict() {
     const fileInput = document.getElementById('fileInput');
     const file = fileInput.files[0];
@@ -48,7 +72,7 @@ async function predict() {
 
             ctx.lineWidth = 4;
             ctx.strokeStyle = 'red';
-            ctx.font = "18px Arial";
+            ctx.font = "12px Arial";
             ctx.fillStyle = "red";
 
             predictions.forEach(pred => {
@@ -58,8 +82,13 @@ async function predict() {
                 const height = pred.height;
 
                 ctx.strokeRect(x, y, width, height);
+
+                // Menyesuaikan ukuran font berdasarkan lebar kotak prediksi
+                const fontSize = Math.max(12, Math.min(width / 12, 20)); // font size antara 12px dan 20px
+                ctx.font = `${fontSize}px Arial`;
+
                 ctx.fillText(
-                    pred.class + " (" + (pred.confidence * 100).toFixed(1) + "%)",
+                    pred.class + " " + (pred.confidence * 100).toFixed(1) + "%",
                     x,
                     y - 10
                 );
