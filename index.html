@@ -5,20 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Deteksi Penyakit Kulit Kucing</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <script src="env.js"></script> <!-- env dulu -->
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script> <!-- axios -->
 </head>
 <body>
 
-  <h1>Deteksi Penyakit Kulit pada Kucing</h1>
-  <input type="file" id="fileInput" accept="image/*">
-  <button onclick="predict()">Prediksi</button>
+  <div class="container">
+    <h1>Deteksi Penyakit Kulit pada Kucing</h1>
+    
+    <div class="input-container">
+      <input type="file" id="fileInput" accept="image/*">
+      <button class="btn" onclick="predict()">
+        <i class="fas fa-paw"></i> Prediksi
+      </button>      
+    </div>
 
-  <div>
-    <canvas id="canvas"></canvas>
+    <div class="canvas-container">
+      <canvas id="canvas"></canvas>
+    </div>
+
+    <div id="result"></div>
   </div>
-
-  <div id="result"></div>
 
   <script src="script.js"></script> <!-- script utama -->
 </body>
