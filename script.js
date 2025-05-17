@@ -31,6 +31,26 @@ function loadImagePreview() {
     };
 }
 
+function cancelUpload() {
+    const fileInput = document.getElementById('fileInput');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const result = document.getElementById('result');
+
+    // Reset input file
+    fileInput.value = "";
+
+    // Clear canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Reset result text
+    result.innerText = "";
+
+    // Optional: Reset canvas size kecil lagi (kalau mau rapih banget)
+    canvas.width = 320;
+    canvas.height = 320;
+}
+
 async function predict() {
     const fileInput = document.getElementById('fileInput');
     const file = fileInput.files[0];
@@ -84,7 +104,7 @@ async function predict() {
                 ctx.strokeRect(x, y, width, height);
 
                 // Menyesuaikan ukuran font berdasarkan lebar kotak prediksi
-                const fontSize = Math.max(12, Math.min(width / 12, 20)); // font size antara 12px dan 20px
+                const fontSize = 28; // font size antara 12px dan 20px
                 ctx.font = `${fontSize}px Arial`;
 
                 ctx.fillText(

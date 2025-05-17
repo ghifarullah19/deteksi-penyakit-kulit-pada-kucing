@@ -13,19 +13,23 @@
 
   <div class="container">
     <h1>Deteksi Penyakit Kulit pada Kucing</h1>
+
+    <div id="result"></div>
+
+    <div class="canvas-container">
+      <canvas id="canvas"></canvas>
+    </div>
     
     <div class="input-container">
       <input type="file" id="fileInput" accept="image/*" onchange="loadImagePreview()">
       <button class="btn" onclick="predict()">
         <i class="fas fa-paw"></i> Prediksi
-      </button>      
+      </button>
+      <button class="btn btn-cancel" onclick="cancelUpload()">
+        <i class="fas fa-times"></i> Batal
+      </button> 
     </div>
 
-    <div class="canvas-container">
-      <canvas id="canvas"></canvas>
-    </div>
-
-    <div id="result"></div>
   </div>
 
   <script src="script.js"></script> <!-- script utama -->
