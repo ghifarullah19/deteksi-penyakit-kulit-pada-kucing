@@ -6,10 +6,11 @@ async function loadImageBase64(file) {
         reader.onerror = (error) => reject(error);
     });
 }
-    
+
 let currentStream = null;
 let isCameraMode = false;
 let capturedImageData = null;
+let currentFacingMode = 'user'; // 'user' for front camera, 'environment' for back camera
 
 // Loading functions
 function showLoading(message = "Memproses gambar...") {
@@ -64,16 +65,17 @@ async function toggleCamera() {
     const canvas = document.getElementById('canvas');
     const fileInput = document.getElementById('fileInput');
     const captureBtn = document.getElementById('captureBtn');
+    const switchCameraBtn = document.getElementById('switchCameraBtn');
 
     if (!isCameraMode) {
         try {
             showLoading("Mengakses kamera...");
-            currentStream = await navigator.mediaDevices.getUserMedia({ video: true });
-            video.srcObject = currentStream;
+            await startCamera();
             video.style.display = 'block';
             canvas.style.display = 'none';
             fileInput.style.display = 'none';
             captureBtn.style.display = 'inline-block';
+            switchCameraBtn.style.display = 'inline-block';
             isCameraMode = true;
             hideLoading();
         } catch (error) {
@@ -85,11 +87,64 @@ async function toggleCamera() {
     }
 }
 
+async function startCamera() {
+    const video = document.getElementById('video');
+
+    const constraints = {
+        video: {
+            facingMode: currentFacingMode,
+            width: { ideal: 1280 },
+            height: { ideal: 720 }
+        }
+    };
+
+    currentStream = await navigator.mediaDevices.getUserMedia(constraints);
+    video.srcObject = currentStream;
+}
+
+async function switchCamera() {
+    if (!isCameraMode) return;
+
+    try {
+        showLoading("Mengganti kamera...");
+
+        // Stop current stream
+        if (currentStream) {
+            currentStream.getTracks().forEach(track => track.stop());
+        }
+
+        // Switch facing mode
+        currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
+
+        // Start new stream with switched camera
+        await startCamera();
+
+        hideLoading();
+
+        // Update button text to show current camera
+        const switchBtn = document.getElementById('switchCameraBtn');
+        switchBtn.innerHTML = currentFacingMode === 'user'
+            ? '<i class="fas fa-sync-alt"></i> Kamera Belakang'
+            : '<i class="fas fa-sync-alt"></i> Kamera Depan';
+
+    } catch (error) {
+        hideLoading();
+        // If switching fails, try to go back to previous camera
+        currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
+        try {
+            await startCamera();
+        } catch (fallbackError) {
+            alert('Tidak dapat mengganti kamera: ' + error.message);
+        }
+    }
+}
+
 function stopCamera() {
     const video = document.getElementById('video');
     const canvas = document.getElementById('canvas');
     const fileInput = document.getElementById('fileInput');
     const captureBtn = document.getElementById('captureBtn');
+    const switchCameraBtn = document.getElementById('switchCameraBtn');
 
     if (currentStream) {
         currentStream.getTracks().forEach(track => track.stop());
@@ -100,7 +155,12 @@ function stopCamera() {
     canvas.style.display = 'block';
     fileInput.style.display = 'block';
     captureBtn.style.display = 'none';
+    switchCameraBtn.style.display = 'none';
     isCameraMode = false;
+
+    // Reset facing mode to front camera for next use
+    currentFacingMode = 'user';
+    switchCameraBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Kamera Belakang';
 }
 
 function capturePhoto() {
