@@ -66,6 +66,8 @@ async function toggleCamera() {
     const fileInput = document.getElementById('fileInput');
     const captureBtn = document.getElementById('captureBtn');
     const switchCameraBtn = document.getElementById('switchCameraBtn');
+    const cameraBtn = document.querySelector('.btn-camera');
+    const predictBtn = document.querySelector('.btn-predict');
 
     if (!isCameraMode) {
         try {
@@ -76,6 +78,11 @@ async function toggleCamera() {
             fileInput.style.display = 'none';
             captureBtn.style.display = 'inline-block';
             switchCameraBtn.style.display = 'inline-block';
+            
+            // Hide camera and predict buttons during capture mode
+            cameraBtn.style.display = 'none';
+            predictBtn.style.display = 'none';
+            
             isCameraMode = true;
             hideLoading();
         } catch (error) {
@@ -145,6 +152,8 @@ function stopCamera() {
     const fileInput = document.getElementById('fileInput');
     const captureBtn = document.getElementById('captureBtn');
     const switchCameraBtn = document.getElementById('switchCameraBtn');
+    const cameraBtn = document.querySelector('.btn-camera');
+    const predictBtn = document.querySelector('.btn-predict');
 
     if (currentStream) {
         currentStream.getTracks().forEach(track => track.stop());
@@ -156,6 +165,11 @@ function stopCamera() {
     fileInput.style.display = 'block';
     captureBtn.style.display = 'none';
     switchCameraBtn.style.display = 'none';
+    
+    // Show camera and predict buttons back
+    cameraBtn.style.display = 'inline-flex';
+    predictBtn.style.display = 'inline-flex';
+    
     isCameraMode = false;
 
     // Reset facing mode to front camera for next use
@@ -200,6 +214,8 @@ function cancelUpload() {
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
         const result = document.getElementById('result');
+        const cameraBtn = document.querySelector('.btn-camera');
+        const predictBtn = document.querySelector('.btn-predict');
 
         // Reset input file
         fileInput.value = "";
@@ -217,6 +233,10 @@ function cancelUpload() {
         if (isCameraMode) {
             stopCamera();
         }
+
+        // Ensure camera and predict buttons are visible
+        cameraBtn.style.display = 'inline-flex';
+        predictBtn.style.display = 'inline-flex';
 
         // Optional: Reset canvas size kecil lagi (kalau mau rapih banget)
         canvas.width = 320;
