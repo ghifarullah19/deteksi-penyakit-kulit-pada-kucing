@@ -6,32 +6,50 @@
   <title>Deteksi Penyakit Kulit Kucing</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <script src="env.js"></script> <!-- env dulu -->
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script> <!-- axios -->
+  <script src="env.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
 
   <div class="container">
-    <h1>Deteksi Penyakit Kulit pada Kucing</h1>
+    <h1>🐱 Deteksi Penyakit Kulit pada Kucing</h1>
 
-    <div id="result"></div>
+    <div id="result">Pilih gambar atau ambil foto untuk memulai deteksi</div>
+
+    <!-- Loading Spinner -->
+    <div id="loading" class="loading-container" style="display: none;">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Memproses gambar...</div>
+    </div>
 
     <div class="canvas-container">
-      <canvas id="canvas"></canvas>
+      <canvas id="canvas" width="320" height="320"></canvas>
+      <video id="video" autoplay style="display: none;"></video>
     </div>
     
     <div class="input-container">
-      <input type="file" id="fileInput" accept="image/*" onchange="loadImagePreview()">
-      <button class="btn" onclick="predict()">
-        <i class="fas fa-paw"></i> Prediksi
-      </button>
-      <button class="btn btn-cancel" onclick="cancelUpload()">
-        <i class="fas fa-times"></i> Batal
-      </button> 
+      <div class="file-input-wrapper">
+        <input type="file" id="fileInput" accept="image/*" onchange="loadImagePreview()">
+      </div>
+      
+      <div class="button-group">
+        <button class="btn btn-camera" onclick="toggleCamera()">
+          <i class="fas fa-camera"></i> Kamera
+        </button>
+        <button class="btn btn-capture" id="captureBtn" onclick="capturePhoto()" style="display: none;">
+          <i class="fas fa-camera-retro"></i> Ambil Foto
+        </button>
+        <button class="btn btn-predict" onclick="predict()">
+          <i class="fas fa-paw"></i> Prediksi
+        </button>
+        <button class="btn btn-cancel" onclick="cancelUpload()">
+          <i class="fas fa-times"></i> Batal
+        </button>
+      </div>
     </div>
 
   </div>
 
-  <script src="script.js"></script> <!-- script utama -->
+  <script src="script.js"></script>
 </body>
 </html>
