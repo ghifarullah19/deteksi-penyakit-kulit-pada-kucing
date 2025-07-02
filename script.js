@@ -68,21 +68,29 @@ async function toggleCamera() {
     const switchCameraBtn = document.getElementById('switchCameraBtn');
     const cameraBtn = document.querySelector('.btn-camera');
     const predictBtn = document.querySelector('.btn-predict');
+    const canvasContainer = document.querySelector('.canvas-container');
 
     if (!isCameraMode) {
         try {
             showLoading("Mengakses kamera...");
             await startCamera();
+
+            // Enable fullscreen mode
+            document.body.classList.add('camera-fullscreen');
+            canvasContainer.classList.add('fullscreen');
+            video.classList.add('fullscreen');
+
             video.style.display = 'block';
             canvas.style.display = 'none';
             fileInput.style.display = 'none';
-            captureBtn.style.display = 'inline-block';
-            switchCameraBtn.style.display = 'inline-block';
-            
+
+            // Create fullscreen controls
+            createFullscreenControls();
+
             // Hide camera and predict buttons during capture mode
             cameraBtn.style.display = 'none';
             predictBtn.style.display = 'none';
-            
+
             isCameraMode = true;
             hideLoading();
         } catch (error) {
@@ -92,6 +100,41 @@ async function toggleCamera() {
     } else {
         stopCamera();
     }
+}
+
+function createFullscreenControls() {
+    // Remove existing controls if any
+    const existingControls = document.querySelector('.fullscreen-controls');
+    if (existingControls) {
+        existingControls.remove();
+    }
+
+    // Create new controls
+    const controlsDiv = document.createElement('div');
+    controlsDiv.className = 'fullscreen-controls';
+
+    const switchBtn = document.createElement('button');
+    switchBtn.className = 'btn btn-switch';
+    switchBtn.innerHTML = currentFacingMode === 'user'
+        ? '<i class="fas fa-sync-alt"></i> Kamera Belakang'
+        : '<i class="fas fa-sync-alt"></i> Kamera Depan';
+    switchBtn.onclick = switchCamera;
+
+    const captureBtn = document.createElement('button');
+    captureBtn.className = 'btn btn-capture';
+    captureBtn.innerHTML = '<i class="fas fa-camera-retro"></i> Ambil Foto';
+    captureBtn.onclick = capturePhoto;
+
+    const cancelBtn = document.createElement('button');
+    cancelBtn.className = 'btn btn-cancel';
+    cancelBtn.innerHTML = '<i class="fas fa-times"></i> Tutup';
+    cancelBtn.onclick = stopCamera;
+
+    controlsDiv.appendChild(switchBtn);
+    controlsDiv.appendChild(captureBtn);
+    controlsDiv.appendChild(cancelBtn);
+
+    document.body.appendChild(controlsDiv);
 }
 
 async function startCamera() {
@@ -128,11 +171,13 @@ async function switchCamera() {
 
         hideLoading();
 
-        // Update button text to show current camera
-        const switchBtn = document.getElementById('switchCameraBtn');
-        switchBtn.innerHTML = currentFacingMode === 'user'
-            ? '<i class="fas fa-sync-alt"></i> Kamera Belakang'
-            : '<i class="fas fa-sync-alt"></i> Kamera Depan';
+        // Update fullscreen controls button text
+        const fullscreenSwitchBtn = document.querySelector('.fullscreen-controls .btn-switch');
+        if (fullscreenSwitchBtn) {
+            fullscreenSwitchBtn.innerHTML = currentFacingMode === 'user'
+                ? '<i class="fas fa-sync-alt"></i> Kamera Belakang'
+                : '<i class="fas fa-sync-alt"></i> Kamera Depan';
+        }
 
     } catch (error) {
         hideLoading();
@@ -154,10 +199,22 @@ function stopCamera() {
     const switchCameraBtn = document.getElementById('switchCameraBtn');
     const cameraBtn = document.querySelector('.btn-camera');
     const predictBtn = document.querySelector('.btn-predict');
+    const canvasContainer = document.querySelector('.canvas-container');
 
     if (currentStream) {
         currentStream.getTracks().forEach(track => track.stop());
         currentStream = null;
+    }
+
+    // Exit fullscreen mode
+    document.body.classList.remove('camera-fullscreen');
+    canvasContainer.classList.remove('fullscreen');
+    video.classList.remove('fullscreen');
+
+    // Remove fullscreen controls
+    const fullscreenControls = document.querySelector('.fullscreen-controls');
+    if (fullscreenControls) {
+        fullscreenControls.remove();
     }
 
     video.style.display = 'none';
@@ -165,11 +222,11 @@ function stopCamera() {
     fileInput.style.display = 'block';
     captureBtn.style.display = 'none';
     switchCameraBtn.style.display = 'none';
-    
+
     // Show camera and predict buttons back
     cameraBtn.style.display = 'inline-flex';
     predictBtn.style.display = 'inline-flex';
-    
+
     isCameraMode = false;
 
     // Reset facing mode to front camera for next use
